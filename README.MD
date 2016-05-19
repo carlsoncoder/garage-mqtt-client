@@ -29,7 +29,7 @@ Lastly, you will need to create a file called "config.py" in the root of the dir
         username = 'yourUserName'
         password = 'yourPassword'
 
-Feel free to reach out to me at Twitter via [@carlsoncoder](https://twitter.com/carlsoncoder "@carlsoncoder") with any questions, or check out [my blog.](http://www.carlsoncoder.com/#/blog/2014_11_06_Custom-login-authentication-with-Nancy-and-csharp "Carlson Coder Blog")
+Feel free to reach out to me at Twitter via [@carlsoncoder](https://twitter.com/carlsoncoder "@carlsoncoder") with any questions, or check out [my blog.](http://www.carlsoncoder.com/ "Carlson Coder Blog")
 
 Thanks,
 Justin
