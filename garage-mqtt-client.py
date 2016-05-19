@@ -18,8 +18,7 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message_received(client, userdata, msg):
-    print('Message Received:')
-    print(msg.topic + " - " + msg.payload)
+    print('Message Received - Topic: [' + msg.topic + " - Payload: [" + msg.payload + "]")
 
     if (msg.topic == healthCheckTopic):
         handle_health_check()
