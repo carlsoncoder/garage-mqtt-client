@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+config.py
+config.pyc
+certs/
+__TODO__

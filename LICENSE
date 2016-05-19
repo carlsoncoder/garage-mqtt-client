@@ -1,0 +1,1 @@
+The code I have specifically written is free of license, however, referenced 3rd party components are likely bound by their own terms and licenses.
