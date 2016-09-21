@@ -6,6 +6,10 @@ import time
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 
+# sleep for 2 minutes to ensure we have network connectivity on reboot of the Pi, since this is run as a startup script
+# TODO: try to make this BETTER than this ugly hack in the future
+time.sleep(60)
+
 # set the GPIO mode
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
