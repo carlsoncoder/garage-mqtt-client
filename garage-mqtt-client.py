@@ -62,8 +62,12 @@ def handle_door_action_request(payload):
     jsonPayload = json.loads(payload)
     requestedAction = jsonPayload["action"]
 
+    checkStatus = requestedAction
+    if checkStatus == 'close':
+        checkStatus = 'closed'
+
     currentDoorStatus = garage_door_status()
-    if (requestedAction == currentDoorStatus):
+    if checkStatus == currentDoorStatus:
         # user wants to 'open', but garage already is open (or vice versa) - Don't do anything in this case
         reply = {'commandIgnored': True}
         jsonReply = str(json.dumps(reply))
