@@ -3,6 +3,9 @@
 import config
 import json
 import time
+import math
+from time import mktime
+from datetime import datetime
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 
@@ -41,12 +44,36 @@ def on_connect(client, userdata, flags, rc):
 def on_message_received(client, userdata, msg):
     print('Message Received - Topic: [' + msg.topic + "] - Payload: [" + msg.payload + "]")
 
-    if (msg.topic == healthCheckTopic):
+    if not validate_message_timestamp(payload=msg.payload, topic=msg.topic):
+        print('Ignoring message as the time difference is too great')
+    elif msg.topic == healthCheckTopic:
         handle_health_check_request()
-    elif (msg.topic == doorStatusTopic):
+    elif msg.topic == doorStatusTopic:
         handle_door_status_request()
-    elif (msg.topic == doorActionTopic):
+    elif msg.topic == doorActionTopic:
         handle_door_action_request(payload=msg.payload)
+
+
+# validates local time against message time - if there is more than 5 minutes difference, discard the message
+# True return value means we are good.  False return value means we need to discard
+def validate_message_timestamp(payload, topic):
+    jsonPayload = json.loads(payload)
+    messageTimestamp = int(jsonPayload["timestamp"])
+    localTimestamp = get_utc_timestamp()
+    difference = math.fabs(localTimestamp - messageTimestamp)
+
+    if difference > 300:
+        reply = {'error': 'message ignored as time difference (' + str(difference) + ' seconds) is too great'}
+        jsonReply = str(json.dumps(reply))
+        client.publish(topic + '/reply', jsonReply, 0, False)
+        return False
+    else:
+        return True
+
+
+def get_utc_timestamp():
+    utcNow = datetime.utcnow()
+    return round(mktime(utcNow.timetuple()) + utcNow.microsecond/1000000.0)
 
 
 def handle_health_check_request():
@@ -73,25 +100,26 @@ def handle_door_action_request(payload):
     currentDoorStatus = garage_door_status()
     if checkStatus == currentDoorStatus:
         # user wants to 'open', but garage already is open (or vice versa) - Don't do anything in this case
-        reply = {'commandIgnored': True}
+        reply = {'error': 'requested action (' + str(requestedAction) + ') ignored as door is already in that state'}
         jsonReply = str(json.dumps(reply))
         client.publish(doorActionTopic + '/reply', jsonReply, 0, False)
     else:
         open_close_garage_door()
-        reply = {'commandIgnored': False}
+        reply = {'successful': True}
         jsonReply = str(json.dumps(reply))
         client.publish(doorActionTopic + '/reply', jsonReply, 0, False)
 
 
 def garage_door_status():
-    if (GPIO.input(mag_switch_pin)):
+    if GPIO.input(mag_switch_pin):
         return 'open'
     else:
         return 'closed'
 
 
 def open_close_garage_door():
-    # we can't actually choose "open" or "close".  All we can do is toggle the relay to make it the opposite of what it currently is
+    # We can't actually choose "open" or "close".
+    # All we can do is toggle the relay to make it the opposite of what it currently is
     GPIO.output(relay_pin, True)
     time.sleep(0.2)
     GPIO.output(relay_pin, False)
