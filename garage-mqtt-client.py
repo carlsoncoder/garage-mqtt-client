@@ -19,9 +19,8 @@ GPIO.setwarnings(False)
 
 # define the topics to subscribe to
 healthCheckTopic = '/garage/' + config.clientId + '/healthCheck'
-doorStatusTopic = '/garage/' + config.clientId + '/doorStatus'
 doorActionTopic = '/garage/' + config.clientId + '/doorAction'
-allTopics = [healthCheckTopic, doorStatusTopic, doorActionTopic]
+allTopics = [healthCheckTopic, doorActionTopic]
 
 # hook up and define the pins for the magnetic switch
 mag_switch_pin = 17
@@ -48,8 +47,6 @@ def on_message_received(client, userdata, msg):
         print('Ignoring message as the time difference is too great')
     elif msg.topic == healthCheckTopic:
         handle_health_check_request()
-    elif msg.topic == doorStatusTopic:
-        handle_door_status_request()
     elif msg.topic == doorActionTopic:
         handle_door_action_request(payload=msg.payload)
 
@@ -77,16 +74,10 @@ def get_utc_timestamp():
 
 
 def handle_health_check_request():
-    reply = {'IsAvailable': True}
-    jsonReply = str(json.dumps(reply))
-    client.publish(healthCheckTopic + '/reply', jsonReply, 0, False)
-
-
-def handle_door_status_request():
     doorStatus = garage_door_status()
     reply = {'doorStatus': doorStatus}  # 'open' or 'closed'
     jsonReply = str(json.dumps(reply))
-    client.publish(doorStatusTopic + '/reply', jsonReply, 0, False)
+    client.publish(healthCheckTopic + '/reply', jsonReply, 0, False)
 
 
 def handle_door_action_request(payload):
