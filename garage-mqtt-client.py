@@ -59,7 +59,7 @@ def validate_message_timestamp(payload, topic):
     localTimestamp = get_utc_timestamp()
     difference = math.fabs(localTimestamp - messageTimestamp)
 
-    if difference > 300:
+    if difference > config.maxMessageSkewTime:
         reply = {'error': 'message ignored as time difference (' + str(difference) + ' seconds) is too great'}
         jsonReply = str(json.dumps(reply))
         client.publish(topic + '/reply', jsonReply, 0, False)
@@ -99,7 +99,8 @@ def handle_door_action_request(payload):
         reply = {'successful': True}
         jsonReply = str(json.dumps(reply))
         client.publish(doorActionTopic + '/reply', jsonReply, 0, False)
-
+        time.sleep(config.garageActionTime)
+        handle_health_check_request()
 
 def garage_door_status():
     if GPIO.input(mag_switch_pin):
