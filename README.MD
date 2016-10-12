@@ -24,7 +24,7 @@ Lastly, you will need to create a file called "config.py" in the root of the dir
         # how old of a message will we still accept and process (in seconds)?
         maxMessageSkewTime = 180
         # how long does the garage take to fully open or close (in seconds)?
-        garageActionTime = 23
+        garageActionTime = 20
 
         # define the path to the certificates
         certFilePath = 'certs/yourCertificateFileName.pem'
