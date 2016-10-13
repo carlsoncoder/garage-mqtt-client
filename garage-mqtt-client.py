@@ -7,6 +7,7 @@ import math
 from time import mktime
 from datetime import datetime
 import paho.mqtt.client as mqtt
+import pytz
 import RPi.GPIO as GPIO
 
 # sleep for 1 minute to ensure we have network connectivity on reboot of the Pi, since this is run as a startup script
@@ -69,8 +70,10 @@ def validate_message_timestamp(payload, topic):
 
 
 def get_utc_timestamp():
-    utcNow = datetime.utcnow()
-    return round(mktime(utcNow.timetuple()) + utcNow.microsecond/1000000.0)
+    tz = pytz.timezone("UTC")
+    utcNow = tz.localize(datetime.utcnow(), is_dst=None)
+    timestamp = (utcNow - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
+    return timestamp
 
 
 def handle_health_check_request():

@@ -4,9 +4,10 @@ This is the source code for my MQTT client used on the garage door(s)
 
 This application is designed to run on a Raspberry Pi
 
-You need to install one dependency, "paho-mqtt".  This can be installed via PIP:
+You need to install two dependencies, "paho-mqtt" and "pytz"  These can be installed via PIP:
 
         pip install paho-mqtt
+        pip install pytz
 
 You will also need an SSL certificate, private key file, and ca-bundle file.  These should be placed in the root of the directory in a folder called "certs".  Note this is NOT included in this repo.
 
