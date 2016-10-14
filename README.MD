@@ -36,6 +36,26 @@ Lastly, you will need to create a file called "config.py" in the root of the dir
         username = 'yourUserName'
         password = 'yourPassword'
 
+After this, you'll need to setup a startup script to have this run on boot.  In the directory where you placed this file (in my case, '/home/pi/HomeAutomation'), create a file called "init-garage-monitor.sh".  Put the following text in it:
+
+        #!/bin/sh
+        cd /home/pi/HomeAutomation/garage-mqtt-client
+        /usr/bin/python garage-mqtt-client.py &
+
+Now, make it executable:
+
+        sudo chmod +x init-garage-monitor.sh
+
+Open up crontab as sudo:
+
+        sudo crontab -e
+
+Add this line at the botton:
+
+        @reboot /home/pi/HomeAutomation/init-garage-monitor.sh &
+
+Now, when you reboot the Pi, it should automatically start up the script and run it!
+
 Feel free to reach out to me at Twitter via [@carlsoncoder](https://twitter.com/carlsoncoder "@carlsoncoder") with any questions, or check out [my blog.](http://www.carlsoncoder.com/ "Carlson Coder Blog")
 
 Thanks,
